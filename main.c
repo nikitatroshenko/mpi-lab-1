@@ -64,7 +64,7 @@ void receive_data(int world_size)
 			 source,
 			 0,
 			 MPI_COMM_WORLD,
-			 &status);
+			 MPI_STATUS_IGNORE);
 		world_data[source] = data;
 	}
 
