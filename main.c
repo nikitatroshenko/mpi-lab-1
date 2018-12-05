@@ -68,7 +68,7 @@ void receive_data(int world_size)
 	}
 
 	for (i = 0; i < world_size; i++) {
-		printf("%d -> %s", i, world_data[i]);
+		printf("%d -> %s\n", i, world_data[i]);
 	}
 
 	for (i = 0; i < world_size; i++) {
