@@ -17,9 +17,6 @@ int main(int argc, char **argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
 	compose_and_send_data(world_rank, world_size);
-	if (world_rank == 0) {
-		receive_data(world_size);
-	}
 
 	MPI_Finalize();
 }
@@ -28,11 +25,18 @@ void compose_and_send_data(int world_rank, int world_size)
 {
 	int data_size = 10 + world_size + rand() % 10;
 	char *data = calloc(data_size, sizeof *data);
+	MPI_Request request;
 
 	snprintf(data, data_size, "hello from %d out of %d, my master", world_rank, world_size);
 	data[data_size - 2] = '!';
 
-	MPI_Send(data, data_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
+	MPI_Isend(data, data_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &request);
+
+	if (world_rank == 0) {
+		receive_data(world_size);
+	}
+
+	MPI_Wait(&request, MPI_STATUS_IGNORE);
 	free(data);
 }
 
@@ -41,7 +45,7 @@ void receive_data(int world_size)
 	char **world_data = calloc(world_size, sizeof *world_data);
 	int i;
 
-	for (i = 0; i < world_size - 1; i++) {
+	for (i = 0; i < world_size; i++) {
 		MPI_Status status;
 		char *data;
 		int data_size;
