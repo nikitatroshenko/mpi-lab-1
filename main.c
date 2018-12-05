@@ -32,7 +32,7 @@ void compose_and_send_data(int world_rank, int world_size)
 	snprintf(data, data_size, "hello from %d out of %d, my master", world_rank, world_size);
 	data[data_size - 2] = '!';
 
-	MPI_Send(data, data_size, MPI_CHAR, 0, MPI_ANY_TAG, MPI_COMM_WORLD);
+	MPI_Send(data, data_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
 	free(data);
 }
 
@@ -47,7 +47,7 @@ void receive_data(int world_size)
 		int data_size;
 		int source;
 
-		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		MPI_Probe(MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_CHAR, &data_size);
 
 		source = status.MPI_SOURCE;
@@ -57,7 +57,7 @@ void receive_data(int world_size)
 			 data_size,
 			 MPI_CHAR,
 			 source,
-			 MPI_ANY_TAG,
+			 0,
 			 MPI_COMM_WORLD,
 			 &status);
 		world_data[source] = data;
