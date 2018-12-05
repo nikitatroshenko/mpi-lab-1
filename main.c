@@ -23,11 +23,12 @@ int main(int argc, char **argv)
 
 void compose_and_send_data(int world_rank, int world_size)
 {
-	int data_size = 10 + world_size + rand() % 10;
+	srand(world_rank);
+	int data_size = 10 + world_size + world_rank + rand() % 10;
 	char *data = calloc(data_size, sizeof *data);
 	MPI_Request request;
 
-	snprintf(data, data_size, "hello from %d out of %d, my master", world_rank, world_size);
+	snprintf(data, data_size, "%d out of %d says hello, my master", world_rank, world_size);
 	data[data_size - 2] = '!';
 
 	MPI_Isend(data, data_size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &request);
